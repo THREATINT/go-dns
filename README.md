@@ -1,4 +1,4 @@
-# go/net
+# github.com/THREATINT/go-net
 
 ## Package net
 
