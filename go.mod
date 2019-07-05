@@ -1,4 +1,4 @@
-module github.com/TRHREATINT/go-dns
+module github.com/THREATINT/go-dns
 
 go 1.12
 
