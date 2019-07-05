@@ -1,4 +1,4 @@
-package Net
+package dns
 
 import (
 	"fmt"
