@@ -1,6 +1,6 @@
-# github.com/THREATINT/go-net
+# github.com/THREATINT/go-dns
 
-## Package net
+## Package dns
 
 
 
