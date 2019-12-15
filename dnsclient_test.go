@@ -4,7 +4,7 @@ import "testing"
 
 func TestLookupHostname(t *testing.T) {
 
-	dnsClient := NewDNSClient("9.9.9.9")
+	dnsClient := NewDNSClient([]string{"9.9.9.9"})
 	results, err := dnsClient.LookupHostname("dns.quad9.net")
 	if err != nil {
 		t.Error(err.Error())
@@ -20,7 +20,7 @@ func TestLookupHostname(t *testing.T) {
 
 func TestLookupAddr(t *testing.T) {
 
-	dnsClient := NewDNSClient("9.9.9.9")
+	dnsClient := NewDNSClient([]string{"9.9.9.9"})
 	results, err := dnsClient.LookupAddr("9.9.9.9")
 	if err != nil {
 		t.Error(err.Error())
