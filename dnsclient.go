@@ -11,16 +11,17 @@ import (
 	"github.com/miekg/dns"
 )
 
-type DNSClient struct {
+// Client struct
+type Client struct {
 	client *dns.Client
 
 	dnsServers []string
 	retries    uint8
 }
 
-// NewDNSClient(dnsservers []string) *DNSClient
-func NewDNSClient(dnsservers []string) *DNSClient {
-	dnsclient := DNSClient{}
+// NewDNSClient (dnsservers)
+func NewClient(dnsservers []string) *Client {
+	dnsclient := Client{}
 	dnsclient.client = &dns.Client{}
 
 	if len(dnsservers) == 0 {
@@ -35,38 +36,38 @@ func NewDNSClient(dnsservers []string) *DNSClient {
 	return &dnsclient
 }
 
-// (dnsclient *DNSClient) SetRetries(retries uint8)
-func (dnsclient *DNSClient) SetRetries(retries uint8) {
+// SetRetries (retries)
+func (dnsclient *Client) SetRetries(retries uint8) {
 	dnsclient.retries = retries
 }
 
-// (dnsclient *DNSClient) Retries() uint8
-func (dnsclient *DNSClient) Retries() uint8 {
+// Retries
+func (dnsclient *Client) Retries() uint8 {
 	return dnsclient.retries
 }
 
-// (dnsclient *DNSClient) SetTimeout(timeout time.Duration)
-func (dnsclient *DNSClient) SetTimeout(timeout time.Duration) {
+// SetTimeout (timeout)
+func (dnsclient *Client) SetTimeout(timeout time.Duration) {
 	dnsclient.client.Timeout = time.Second * timeout
 }
 
-// (dnsclient *DNSClient) Timeout() time.Duration
-func (dnsclient *DNSClient) Timeout() time.Duration {
+// Timeout
+func (dnsclient *Client) Timeout() time.Duration {
 	return dnsclient.client.Timeout
 }
 
-// (dnsclient *DNSClient) randomDNSServer() string
-func (dnsclient *DNSClient) randomDNSServer() string {
+// randomDNSServer ()
+func (dnsclient *Client) randomDNSServer() string {
 	l := len(dnsclient.dnsServers)
 	if l == 1 {
 		return dnsclient.dnsServers[0]
-	} else {
-		return dnsclient.dnsServers[rand.Intn(l)]
 	}
+
+	return dnsclient.dnsServers[rand.Intn(l)]
 }
 
-// (dnsclient *DNSClient) LookupHostname(hostname string) ([]string, error)
-func (dnsclient *DNSClient) LookupHostname(hostname string) ([]string, error) {
+// LookupHostname (hostname)
+func (dnsclient *Client) LookupHostname(hostname string) ([]string, error) {
 	result := []string{}
 
 	var retries uint8
@@ -121,8 +122,8 @@ retryAAAA:
 	return result, nil
 }
 
-// (dnsclient *DNSClient) LookupAddr(addr string) ([]string, error)
-func (dnsclient *DNSClient) LookupAddr(addr string) ([]string, error) {
+// LookupAddr (addr)
+func (dnsclient *Client) LookupAddr(addr string) ([]string, error) {
 	result := []string{}
 
 	ipaddr := net.ParseIP(addr)
