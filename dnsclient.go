@@ -15,59 +15,59 @@ import (
 type Client struct {
 	client *dns.Client
 
-	dnsServers []string
-	retries    uint8
+	servers []string
+	retries uint8
 }
 
-// NewDNSClient (dnsservers)
-func NewClient(dnsservers []string) *Client {
-	dnsclient := Client{}
-	dnsclient.client = &dns.Client{}
+// NewClient (servers)
+func NewClient(servers []string) *Client {
+	client := Client{}
+	client.client = &dns.Client{}
 
-	if len(dnsservers) == 0 {
-		dnsclient.dnsServers = []string{"127.0.0.1"}
+	if len(servers) == 0 {
+		client.servers = []string{"127.0.0.1"}
 	} else {
-		dnsclient.dnsServers = []string{}
-		for _, dnsserver := range dnsservers {
-			dnsclient.dnsServers = append(dnsclient.dnsServers, net.JoinHostPort(dnsserver, "53"))
+		client.servers = []string{}
+		for _, dnsserver := range servers {
+			client.servers = append(client.servers, net.JoinHostPort(dnsserver, "53"))
 		}
 	}
 
-	return &dnsclient
+	return &client
 }
 
 // SetRetries (retries)
-func (dnsclient *Client) SetRetries(retries uint8) {
-	dnsclient.retries = retries
+func (client *Client) SetRetries(retries uint8) {
+	client.retries = retries
 }
 
-// Retries
-func (dnsclient *Client) Retries() uint8 {
-	return dnsclient.retries
+// Retries (client)
+func (client *Client) Retries() uint8 {
+	return client.retries
 }
 
 // SetTimeout (timeout)
-func (dnsclient *Client) SetTimeout(timeout time.Duration) {
-	dnsclient.client.Timeout = time.Second * timeout
+func (client *Client) SetTimeout(timeout time.Duration) {
+	client.client.Timeout = time.Second * timeout
 }
 
-// Timeout
-func (dnsclient *Client) Timeout() time.Duration {
-	return dnsclient.client.Timeout
+// Timeout (client)
+func (client *Client) Timeout() time.Duration {
+	return client.client.Timeout
 }
 
 // randomDNSServer ()
-func (dnsclient *Client) randomDNSServer() string {
-	l := len(dnsclient.dnsServers)
+func (client *Client) randomDNSServer() string {
+	l := len(client.servers)
 	if l == 1 {
-		return dnsclient.dnsServers[0]
+		return client.servers[0]
 	}
 
-	return dnsclient.dnsServers[rand.Intn(l)]
+	return client.servers[rand.Intn(l)]
 }
 
 // LookupHostname (hostname)
-func (dnsclient *Client) LookupHostname(hostname string) ([]string, error) {
+func (client *Client) LookupHostname(hostname string) ([]string, error) {
 	result := []string{}
 
 	var retries uint8
@@ -75,11 +75,11 @@ func (dnsclient *Client) LookupHostname(hostname string) ([]string, error) {
 
 retryA:
 	m.SetQuestion(fmt.Sprintf("%s.", hostname), dns.TypeA)
-	r, _, err := dnsclient.client.Exchange(&m, dnsclient.randomDNSServer())
+	r, _, err := client.client.Exchange(&m, client.randomDNSServer())
 	if err != nil {
 		retries++
 
-		if retries >= dnsclient.Retries() {
+		if retries >= client.Retries() {
 			return result, err
 		}
 
@@ -99,11 +99,11 @@ retryA:
 	m.SetQuestion(fmt.Sprintf("%s.", hostname), dns.TypeAAAA)
 
 retryAAAA:
-	r, _, err = dnsclient.client.Exchange(&m, dnsclient.randomDNSServer())
+	r, _, err = client.client.Exchange(&m, client.randomDNSServer())
 	if err != nil {
 		retries++
 
-		if retries >= dnsclient.Retries() {
+		if retries >= client.Retries() {
 			return result, err
 		}
 
@@ -123,7 +123,7 @@ retryAAAA:
 }
 
 // LookupAddr (addr)
-func (dnsclient *Client) LookupAddr(addr string) ([]string, error) {
+func (client *Client) LookupAddr(addr string) ([]string, error) {
 	result := []string{}
 
 	ipaddr := net.ParseIP(addr)
@@ -144,11 +144,11 @@ func (dnsclient *Client) LookupAddr(addr string) ([]string, error) {
 	m.SetQuestion(a, dns.TypePTR)
 
 retry:
-	r, _, err := dnsclient.client.Exchange(&m, dnsclient.randomDNSServer())
+	r, _, err := client.client.Exchange(&m, client.randomDNSServer())
 	if err != nil {
 		retries++
 
-		if retries >= dnsclient.Retries() {
+		if retries >= client.Retries() {
 			return result, err
 		}
 
